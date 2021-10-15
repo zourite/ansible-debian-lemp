@@ -1,0 +1,8 @@
+mysql_extensions:
+  - mariadb-server
+  - mariadb-client
+  - python-mysqldb
+
+mysql_password: SuperFuck1ngP@ssw0rd!
+mysql_user: superuser
+mysql_database: piwik

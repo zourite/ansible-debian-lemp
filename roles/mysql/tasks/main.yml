@@ -1,0 +1,33 @@
+---
+- name: Install packages for mysql
+  become: yes
+  apt :
+    name: "{{ mysql_extensions }}"
+    state: latest
+    update_cache: yes
+    install_recommends: yes
+
+- name: Start service mariadb
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: Removes all anonymous user accounts
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+
+- name: Create database user with name 'bob' and password '12345' with all database privileges
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: '*.*:ALL'
+    state: present
+
+- name: Create a new database with name 'piwik'
+  mysql_db:
+    name: "{{ mysql_database }}"
+    state: present
+...

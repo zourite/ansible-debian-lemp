@@ -1,0 +1,44 @@
+---
+- name : GPG KEY for PPA 
+  shell : "yes | wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg"
+
+- name: Add Repo for php 7.4
+  apt_repository:
+    repo: "deb https://packages.sury.org/php/ {{ ansible_distribution_release | lower }} main"
+   
+- name: Updating the repo
+  apt: 
+    update_cache : yes
+
+- name: Install packages for PHP
+  apt :
+    name: "{{ php_extensions }}"
+    state: latest
+    update_cache: yes
+    install_recommends: yes
+
+- name: set PHP memory limit
+  ini_file:
+    path: /etc/php/{{php_version}}/fpm/php.ini
+    section: PHP
+    option: memory_limit
+    value: "{{php_memory}}"
+
+- name: set PHP POST limit
+  ini_file:
+    path: /etc/php/{{php_version}}/fpm/php.ini
+    section: PHP
+    option: post_max_size
+    value: "{{php_upload_size}}"
+
+- name: set PHP upload limit
+  ini_file:
+    path: /etc/php/{{php_version}}/fpm/php.ini
+    section: PHP
+    option: upload_max_filesize
+    value: "{{php_upload_size}}"
+
+- name: restart php
+  service: 
+    name: php{{php_version}}-fpm 
+    state: restarted

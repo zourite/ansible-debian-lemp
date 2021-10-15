@@ -1,0 +1,22 @@
+php_version : 7.4
+php_memory : 512M
+php_upload_size : 20M
+php_extensions:
+  - openssl 
+  - php{{php_version}}-mysql
+  - php{{php_version}}-curl
+  - php{{php_version}}-json
+  - php{{php_version}}-cgi
+  - php{{php_version}}-xsl
+  - php{{php_version}}-cgi
+  - php{{php_version}}-gd
+  - php{{php_version}}-mbstring
+  - php{{php_version}}-zip
+  - php{{php_version}}-xmlrpc
+  - php{{php_version}}-soap
+  - php{{php_version}}-intl
+  - php{{php_version}}-fpm
+  - php{{php_version}}-cli
+  - php{{php_version}}-mysql
+  - php{{php_version}}-xml
+  - php{{php_version}}-common 

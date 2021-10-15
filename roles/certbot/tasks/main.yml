@@ -1,0 +1,7 @@
+- name: Install packages for cerbot
+  become: yes
+  apt :
+    name: "{{ certbot_extensions }}"
+    state: latest
+    update_cache: yes
+    install_recommends: yes

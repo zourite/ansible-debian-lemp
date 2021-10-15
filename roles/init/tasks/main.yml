@@ -1,0 +1,78 @@
+---
+- name: Install essentials packages
+  become: 'yes'
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+    install_recommends: no
+
+- name: Create user and add him in www-data group
+  become: 'yes'
+  user:
+    name: "{{ user }}"
+    shell: /bin/zsh
+    groups: 
+      - www-data
+    append: yes
+    createhome: yes
+
+- name: check if user group is present
+  group:
+    name: "{{ user }}"
+    state: present
+
+- name: Add user in sudoers file
+  become: 'yes'
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%{{ user }}'
+    line: '%{{ user }} ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+# - name: Set authorized key took from file
+#   become: 'yes'
+#   authorized_key:
+#     user: "{{ user }}"
+#     state: present
+#     key: "{{ ssh_keys }}"
+
+- name: Find out playbooks path
+  shell: pwd
+  register: playbook_path_output
+
+- name: check .oh-my-zsh folder
+  stat:
+      path: "{{ playbook_path_output.stdout }}/.oh-my-zsh"
+  register: stat_oh_my_zsh_result
+
+- name: Install Oh! MY ZSH
+  shell: yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  when: not stat_oh_my_zsh_result.stat.exists
+
+- name: Clone module zsh-autosuggestions
+  git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions.git
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    force: yes
+    version: master
+
+- name: Move ohmyZsh folder to user home
+  become : yes
+  copy:
+    src: "{{ playbook_path_output.stdout }}/.oh-my-zsh"
+    remote_src: true
+    dest: /home/{{ user }}/
+    owner: "{{ user }}"
+    group: "{{ user }}"
+
+- name: Create a default ZSH configuration
+  template:
+    src: templates/zshrc.j2
+    dest: /home/{{ user }}/.zshrc
+    owner: "{{ user }}"
+    force: yes
+  become: 'yes'
+
+...

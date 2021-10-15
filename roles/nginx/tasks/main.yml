@@ -1,0 +1,40 @@
+---
+- name: Installation de nginx
+  apt :
+    name: nginx-full
+    state: latest
+  notify: Start NGINX service
+
+- name: create www directory
+  file:
+    path: /var/www/{{ domain }}
+    state: directory
+
+- name: Create a vhosts
+  template:
+    src: templates/site.conf.j2
+    dest: /etc/nginx/sites-enabled/{{ domain }}
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart NGINX
+  become: 'yes'
+
+- name: sync website
+  synchronize:
+    src: piwik/
+    dest: /var/www/{{ domain }}/
+    group: no
+    owner: no
+
+- name: Set file permissions after sync
+  file:
+    path: /var/www/{{ domain }}
+    state: directory
+    owner: "www-data"
+    group: "www-data"
+    mode: u=rwX,g=rX,o=rX 
+    recurse: yes
+
+
+  
