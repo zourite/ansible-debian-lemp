@@ -22,7 +22,7 @@
 
 - name: sync website
   synchronize:
-    src: piwik/
+    src: kozy/
     dest: /var/www/{{ domain }}/
     group: no
     owner: no

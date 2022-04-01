@@ -31,12 +31,12 @@
     line: '%{{ user }} ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
 
-# - name: Set authorized key took from file
-#   become: 'yes'
-#   authorized_key:
-#     user: "{{ user }}"
-#     state: present
-#     key: "{{ ssh_keys }}"
+- name: Set authorized key took from file
+  become: 'yes'
+  authorized_key:
+    user: "{{ user }}"
+    state: present
+    key: "{{ lookup('file', ssh_keys) }}"
 
 - name: Find out playbooks path
   shell: pwd
